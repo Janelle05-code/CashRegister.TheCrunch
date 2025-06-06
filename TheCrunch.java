@@ -1,11 +1,15 @@
-import java.io.*;
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.regex.*;
 
-public class FileHandlingTrial {
+//JANELLE E. LADERA IT1C
+
+public class TheCrunch {
     private static ArrayList<User> users = new ArrayList<>();
-    private static Map<String, List<String>> transactionHistory = new HashMap<>(); // Store transaction history per user
 
     public static void main(String[] args) {
         Scanner scanner = new Scanner(System.in);
@@ -32,23 +36,23 @@ public class FileHandlingTrial {
             break;
         }
 
-        // User Login with 3 attempts
+        // User Log in with 3 attempts
         System.out.println("\n~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ LOGIN ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~");
         boolean loggedIn = false;
-        int loginAttempts = 0;
-        String loggedInUsername = ""; // Track the logged in username
+        int loginAttempts = 0; 
+        String loggedInUsername = ""; 
 
         while (!loggedIn && loginAttempts < 3) {
             System.out.print("Enter your username: ");
-            String loginUser = scanner.nextLine();
+            String loginUser  = scanner.nextLine();
             System.out.print("Enter your password: ");
             String loginPass = scanner.nextLine();
 
-            for (User u : users) {
-                if (u.username.equals(loginUser) && u.password.equals(loginPass)) {
-                    System.out.println("Login successful! Welcome back, " + loginUser + "!");
+            for (User  u : users) {
+                if (u.username.equals(loginUser ) && u.password.equals(loginPass)) {
+                    System.out.println("Login successful! Welcome back, " + loginUser  + "!");
                     loggedIn = true;
-                    loggedInUsername = loginUser;
+                    loggedInUsername = loginUser ; 
                     break;
                 }
             }
@@ -73,14 +77,45 @@ public class FileHandlingTrial {
             ArrayList<Double> priceList = new ArrayList<>();
             ArrayList<String> flavorsSelected = new ArrayList<>();
 
-            // Menu items
-            ArrayList<String> Main = new ArrayList<>(Arrays.asList("Half Chicken", "Whole Chicken"));
-            ArrayList<String> RiceMeal = new ArrayList<>(Arrays.asList("Chicken Shots", "1 pc chicken", "2 pcs chicken", "3 pcs chicken"));
-            ArrayList<String> Sides = new ArrayList<>(Arrays.asList("Chicken shots bucket", "Twister fries", "Plain rice", "Extra sauce"));
-            ArrayList<String> Flavors = new ArrayList<>(Arrays.asList("Classic", "Honey Garlic", "K-Style", "Spicy K-Style", "Teriyaki", "Cheesy Bacon"));
-            ArrayList<Integer> PriceMain = new ArrayList<>(Arrays.asList(265, 495));
-            ArrayList<Integer> PriceRiceMeal = new ArrayList<>(Arrays.asList(70, 75, 115, 145));
-            ArrayList<Integer> PriceSides = new ArrayList<>(Arrays.asList(130, 95, 15, 25));
+            ArrayList<String> Main = new ArrayList<>();
+            Main.add("Half Chicken");
+            Main.add("Whole Chicken");
+
+            ArrayList<String> RiceMeal = new ArrayList<>();
+            RiceMeal.add("Chicken Shots");
+            RiceMeal.add("1 pc chicken");
+            RiceMeal.add("2 pcs chicken");
+            RiceMeal.add("3 pcs chicken");
+
+            ArrayList<String> Sides = new ArrayList<>();
+            Sides.add("Chicken shots bucket");
+            Sides.add("Twister fries");
+            Sides.add("Plain rice");
+            Sides.add("Extra sauce");
+
+            ArrayList<String> Flavors = new ArrayList<>();
+            Flavors.add("Classic");
+            Flavors.add("Honey Garlic");
+            Flavors.add("K-Style");
+            Flavors.add("Spicy K-Style");
+            Flavors.add("Teriyaki");
+            Flavors.add("Cheesy Bacon");
+
+            ArrayList<Integer> PriceMain = new ArrayList<>();
+            PriceMain.add(265); // HALF CHICKEN
+            PriceMain.add(495); // WHOLE CHICKEN
+
+            ArrayList<Integer> PriceRiceMeal = new ArrayList<>();
+            PriceRiceMeal.add(70); // CHICKEN SHOTS
+            PriceRiceMeal.add(75); //1PC CHICKEN
+            PriceRiceMeal.add(115); //2PCS CHICKEN
+            PriceRiceMeal.add(145); // 3PCS CHICKEN
+
+            ArrayList<Integer> PriceSides = new ArrayList<>();
+            PriceSides.add(130); //CHICKEN SHOTS BUCKET
+            PriceSides.add(95); // TWISTER FRIES
+            PriceSides.add(15); // PLAIN RICE
+            PriceSides.add(25); // EXTRA SAUCE
 
             System.out.println("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ WELCOME TO THE CRUNCH ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~");
             System.out.println("This is our menu");
@@ -115,9 +150,10 @@ public class FileHandlingTrial {
                 int choice = 0;
                 try {
                     choice = scanner.nextInt();
+                    scanner.nextLine(); 
                 } catch (InputMismatchException e) {
                     System.out.println("Invalid input. Please enter 1, 2, or 3.");
-                    scanner.nextLine(); // clear invalid input
+                    scanner.nextLine(); 
                     continue;
                 }
 
@@ -130,6 +166,7 @@ public class FileHandlingTrial {
                     int mainChoice = 0;
                     try {
                         mainChoice = scanner.nextInt();
+                        scanner.nextLine();
                     } catch (InputMismatchException e) {
                         System.out.println("Invalid input. Please enter 1 or 2.");
                         scanner.nextLine();
@@ -140,6 +177,7 @@ public class FileHandlingTrial {
                         int qty = 0;
                         try {
                             qty = scanner.nextInt();
+                            scanner.nextLine();
                         } catch (InputMismatchException e) {
                             System.out.println("Invalid quantity. Please enter a number.");
                             scanner.nextLine();
@@ -158,10 +196,11 @@ public class FileHandlingTrial {
                         int flavorChoice = 0;
                         try {
                             flavorChoice = scanner.nextInt();
+                            scanner.nextLine();
                         } catch (InputMismatchException e) {
                             System.out.println("Invalid input for flavor.");
                             scanner.nextLine();
-                            flavorsSelected.add("No flavor"); // default
+                            flavorsSelected.add("No flavor");
                             continue;
                         }
                         if (flavorChoice > 0 && flavorChoice <= Flavors.size()) {
@@ -169,7 +208,7 @@ public class FileHandlingTrial {
                             System.out.println("Flavor selected: " + Flavors.get(flavorChoice - 1));
                         } else {
                             System.out.println("Invalid flavor choice.");
-                            flavorsSelected.add("No flavor"); // default
+                            flavorsSelected.add("No flavor");
                         }
                     } else {
                         System.out.println("Invalid choice for main dish.");
@@ -183,6 +222,7 @@ public class FileHandlingTrial {
                     int riceChoice = 0;
                     try {
                         riceChoice = scanner.nextInt();
+                        scanner.nextLine();
                     } catch (InputMismatchException e) {
                         System.out.println("Invalid input for rice meal.");
                         scanner.nextLine();
@@ -193,6 +233,7 @@ public class FileHandlingTrial {
                         int qty = 0;
                         try {
                             qty = scanner.nextInt();
+                            scanner.nextLine();
                         } catch (InputMismatchException e) {
                             System.out.println("Invalid quantity.");
                             scanner.nextLine();
@@ -211,6 +252,7 @@ public class FileHandlingTrial {
                         int flavorChoice = 0;
                         try {
                             flavorChoice = scanner.nextInt();
+                            scanner.nextLine();
                         } catch (InputMismatchException e) {
                             System.out.println("Invalid input for flavor.");
                             scanner.nextLine();
@@ -236,6 +278,7 @@ public class FileHandlingTrial {
                     int sideChoice = 0;
                     try {
                         sideChoice = scanner.nextInt();
+                        scanner.nextLine();
                     } catch (InputMismatchException e) {
                         System.out.println("Invalid input for side.");
                         scanner.nextLine();
@@ -246,6 +289,7 @@ public class FileHandlingTrial {
                         int qty = 0;
                         try {
                             qty = scanner.nextInt();
+                            scanner.nextLine();
                         } catch (InputMismatchException e) {
                             System.out.println("Invalid quantity.");
                             scanner.nextLine();
@@ -265,6 +309,7 @@ public class FileHandlingTrial {
                             int flavorChoice = 0;
                             try {
                                 flavorChoice = scanner.nextInt();
+                                scanner.nextLine();
                             } catch (InputMismatchException e) {
                                 System.out.println("Invalid input for flavor.");
                                 scanner.nextLine();
@@ -289,9 +334,8 @@ public class FileHandlingTrial {
                 }
 
                 System.out.print("\nWould you like to add anything else? (y/n): ");
-                char continueOrder = scanner.next().charAt(0);
-                scanner.nextLine(); // consume newline
-                if (continueOrder != 'y' && continueOrder != 'Y') {
+                String continueOrder = scanner.nextLine();
+                if (!(continueOrder.trim().equalsIgnoreCase("y"))) {
                     ordering = false; 
                 }
             }
@@ -310,19 +354,17 @@ public class FileHandlingTrial {
                 }
                 System.out.println("Total amount to be paid: PHP " + totalAmount);
                 System.out.print("Is this your final order, " + CustomerName + "? (y/n): ");
-                char confirmOrder = scanner.next().charAt(0);
-                scanner.nextLine(); // consume newline
-                if (confirmOrder == 'y' || confirmOrder == 'Y') {
+                String confirmOrder = scanner.nextLine();
+                if (confirmOrder.trim().equalsIgnoreCase("y")) {
                     double payment = 0;
                     boolean validPayment = false;
 
                     while (!validPayment) {
                         System.out.print("Enter Payment Amount: PHP ");
                         try {
-                            payment = scanner.nextDouble();
-                        } catch (InputMismatchException e) {
+                            payment = Double.parseDouble(scanner.nextLine());
+                        } catch (NumberFormatException e) {
                             System.out.println("Invalid payment input. Please enter a number.");
-                            scanner.nextLine();
                             continue;
                         }
                         if (payment < totalAmount) {
@@ -331,13 +373,11 @@ public class FileHandlingTrial {
                             validPayment = true; 
                         }
                     }
-                    scanner.nextLine(); // consume newline
-
                     double change = payment - totalAmount; 
                     System.out.println("Payment was successful. Your change is: PHP " + change);
                     System.out.println("Thank you for your order, " + CustomerName + "!");
 
-                    // Receipt display
+                    // DISPLAY OF RECEIPT
                     SimpleDateFormat dateFormat = new SimpleDateFormat("MM/dd/yyyy : hh:mma");
                     dateFormat.setTimeZone(TimeZone.getTimeZone("Asia/Manila"));
                     String dateTime = dateFormat.format(new Date());
@@ -352,41 +392,23 @@ public class FileHandlingTrial {
                     System.out.printf("Total Amount: PHP %.2f%n", totalAmount);
                     System.out.printf("Cash Paid: PHP %.2f%n", payment);
                     System.out.printf("Change: PHP %.2f%n", change);
-                    System.out.println("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~");
+                    System.out.println("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~");
 
                     // Log transaction
                     logTransaction(CustomerName, loggedInUsername, product, quantity, priceList, totalAmount);
-
-                    // Save transaction history
-                    StringBuilder transactionDetails = new StringBuilder();
-                    transactionDetails.append(dateTime).append(" - ");
-                    transactionDetails.append("Customer: ").append(CustomerName).append(" - Items: ");
-                    for (int i = 0; i < product.size(); i++) {
-                        transactionDetails.append(quantity.get(i)).append("x ").append(product.get(i));
-                        if (i < product.size() - 1) transactionDetails.append(", ");
-                    }
-                    transactionDetails.append(" - Total: PHP ").append(String.format("%.2f", totalAmount));
-
-                    // Append to existing history if exists for user
-                    transactionHistory.putIfAbsent(loggedInUsername, new ArrayList<>());
-                    transactionHistory.get(loggedInUsername).add(transactionDetails.toString());
-
-                    finalizingOrder = false;
+                    finalizingOrder = false; 
                 } else {
                     System.out.print("Would you like to void an item? (y/n): ");
-                    char voidItem = scanner.next().charAt(0);
-                    scanner.nextLine(); // consume newline
-                    if (voidItem == 'y' || voidItem == 'Y') {
+                    String voidItem = scanner.nextLine();
+                    if (voidItem.trim().equalsIgnoreCase("y")) {
                         System.out.print("Enter the item number to void (1-" + product.size() + "): ");
                         int itemToVoid = 0;
                         try {
-                            itemToVoid = scanner.nextInt();
-                        } catch (InputMismatchException e) {
+                            itemToVoid = Integer.parseInt(scanner.nextLine());
+                        } catch (NumberFormatException e) {
                             System.out.println("Invalid input.");
-                            scanner.nextLine();
                             continue;
                         }
-                        scanner.nextLine(); // consume newline
                         if (itemToVoid > 0 && itemToVoid <= product.size()) {
                             quantity.remove(itemToVoid - 1);
                             product.remove(itemToVoid - 1);
@@ -400,25 +422,54 @@ public class FileHandlingTrial {
                     }
                 }
             }
-
+            
+            // Prompt for another transaction
             System.out.print("\nWould you like to perform another transaction? (y/n): ");
-            char anotherTransaction = scanner.next().charAt(0);
-            scanner.nextLine(); // consume newline
-            if (anotherTransaction != 'y' && anotherTransaction != 'Y') {
-                System.out.println("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ THANK YOU FOR DINING IN THE CRUNCH! ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~"); 
+            String anotherTransaction = scanner.nextLine();
+            if (!(anotherTransaction.trim().equalsIgnoreCase("y"))) {
+                System.out.println("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ THANK YOU FOR DINING IN THE CRUNCH! ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~");
                 continueTransaction = false;
+            } else {
+                quantity.clear();
+                product.clear();
+                priceList.clear();
+                flavorsSelected.clear();
             }
         }
-        scanner.close();
+        
+        // Prompt if user wants to see transaction history
+        System.out.print("\nWould you like to see transaction history? (y/n): ");
+        String viewHistory = scanner.nextLine();
+        if (viewHistory.trim().equalsIgnoreCase("y")) {
+            displayTransactionHistory();
+        }
     }
 
-    // Logging function - logs transaction details to transactions.txt with Philippine date & time
+    private static void displayTransactionHistory() {
+        File file = new File("transactions.txt");
+        if (!file.exists()) {
+            System.out.println("No transaction history found.");
+            return;
+        }
+
+        try (Scanner fileScanner = new Scanner(file)) {
+            System.out.println("\n~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ TRANSACTION HISTORY ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~");
+            while (fileScanner.hasNextLine()) {
+                System.out.println(fileScanner.nextLine());
+            }
+            System.out.println("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~");
+        } catch (IOException e) {
+            System.out.println("Error reading transaction history.");
+            e.printStackTrace();
+        }
+    }
+
     private static void logTransaction(String customerName, String cashierUsername,
                                        ArrayList<String> products, ArrayList<Integer> quantities,
                                        ArrayList<Double> prices, double totalAmount) {
         File file = new File("transactions.txt");
 
-        // Create the file if it doesn't exist
+        // CREATE FILE
         try {
             if (file.createNewFile()) {
                 System.out.println("File created successfully.");
@@ -431,7 +482,7 @@ public class FileHandlingTrial {
             return; 
         }
 
-        // Log transaction details
+        // HISTORY AND TRANSACTION DETAILS
         try (BufferedWriter writer = new BufferedWriter(new FileWriter(file, true))) {
             SimpleDateFormat dateFormat = new SimpleDateFormat("MM/dd/yyyy : hh:mma");
             dateFormat.setTimeZone(TimeZone.getTimeZone("Asia/Manila"));
@@ -446,39 +497,18 @@ public class FileHandlingTrial {
             writer.write("Items Purchased:");
             writer.newLine();
             for (int i = 0; i < products.size(); i++) {
-                writer.write(quantities.get(i) + " x " + products.get(i) + " - Price: PHP " + String.format("%.2f", prices.get(i)));
+                writer.write(quantities.get(i) + " x " + products.get(i) + " - Price: " + prices.get(i));
                 writer.newLine();
             }
-            writer.write("Total Amount: PHP " + String.format("%.2f", totalAmount));
+            writer.write("Total Amount: PHP " + totalAmount);
             writer.newLine();
-            writer.write("--------------------------------------------------");
+            writer.write("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~");
             writer.newLine();
 
             System.out.println("Transaction logged successfully.");
         } catch (IOException e) {
             System.out.println("Oops! Failed to log the transaction.");
             e.printStackTrace();
-        }
-
-        // Option to read the file contents
-        try (Scanner scn = new Scanner(System.in)) {
-            System.out.print("Do you want to read the transaction file? (yes/no): ");
-            String response = scn.nextLine();
-
-            if (response.equalsIgnoreCase("yes")) {
-                // Read the file
-                try (BufferedReader reader = new BufferedReader(new FileReader(file))) {
-                    String line;
-                    while ((line = reader.readLine()) != null) {
-                        System.out.println(line);
-                    }
-                } catch (IOException e) {
-                    System.out.println("Failed to read from the file.");
-                    e.printStackTrace();
-                }
-            } else {
-                System.out.println("Skipping file read.");
-            }
         }
     }
 
