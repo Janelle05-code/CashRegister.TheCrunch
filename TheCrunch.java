@@ -7,6 +7,7 @@ import java.util.*;
 import java.util.regex.*;
 
 //JANELLE E. LADERA IT1C
+//CASH REGISTER PROJECT
 
 public class TheCrunch {
     private static ArrayList<User> users = new ArrayList<>();
@@ -36,7 +37,7 @@ public class TheCrunch {
             break;
         }
 
-        // User Log in with 3 attempts
+        // User Log in with 3 attempts 
         System.out.println("\n~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ LOGIN ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~");
         boolean loggedIn = false;
         int loginAttempts = 0; 
@@ -117,7 +118,7 @@ public class TheCrunch {
             PriceSides.add(15); // PLAIN RICE
             PriceSides.add(25); // EXTRA SAUCE
 
-            System.out.println("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ WELCOME TO THE CRUNCH ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~");
+            System.out.println("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~  WELCOME TO THE CRUNCH ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~");
             System.out.println("This is our menu");
 
             System.out.println("Main Dishes:");
