@@ -3,8 +3,9 @@ import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.regex.*;
 
-public class TheCrunch {
+public class FileHandlingTrial {
     private static ArrayList<User> users = new ArrayList<>();
+    private static Map<String, List<String>> transactionHistory = new HashMap<>(); // Store transaction history per user
 
     public static void main(String[] args) {
         Scanner scanner = new Scanner(System.in);
@@ -34,7 +35,7 @@ public class TheCrunch {
         // User Login with 3 attempts
         System.out.println("\n~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ LOGIN ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~");
         boolean loggedIn = false;
-        int loginAttempts = 0; // Fixed: should start at 0
+        int loginAttempts = 0;
         String loggedInUsername = ""; // Track the logged in username
 
         while (!loggedIn && loginAttempts < 3) {
@@ -47,7 +48,7 @@ public class TheCrunch {
                 if (u.username.equals(loginUser) && u.password.equals(loginPass)) {
                     System.out.println("Login successful! Welcome back, " + loginUser + "!");
                     loggedIn = true;
-                    loggedInUsername = loginUser; // Save username here
+                    loggedInUsername = loginUser;
                     break;
                 }
             }
@@ -72,45 +73,14 @@ public class TheCrunch {
             ArrayList<Double> priceList = new ArrayList<>();
             ArrayList<String> flavorsSelected = new ArrayList<>();
 
-            ArrayList<String> Main = new ArrayList<>();
-            Main.add("Half Chicken");
-            Main.add("Whole Chicken");
-
-            ArrayList<String> RiceMeal = new ArrayList<>();
-            RiceMeal.add("Chicken Shots");
-            RiceMeal.add("1 pc chicken");
-            RiceMeal.add("2 pcs chicken");
-            RiceMeal.add("3 pcs chicken");
-
-            ArrayList<String> Sides = new ArrayList<>();
-            Sides.add("Chicken shots bucket");
-            Sides.add("Twister fries");
-            Sides.add("Plain rice");
-            Sides.add("Extra sauce");
-
-            ArrayList<String> Flavors = new ArrayList<>();
-            Flavors.add("Classic");
-            Flavors.add("Honey Garlic");
-            Flavors.add("K-Style");
-            Flavors.add("Spicy K-Style");
-            Flavors.add("Teriyaki");
-            Flavors.add("Cheesy Bacon");
-
-            ArrayList<Integer> PriceMain = new ArrayList<>();
-            PriceMain.add(265); // HALF CHICKEN
-            PriceMain.add(495); // WHOLE CHICKEN
-
-            ArrayList<Integer> PriceRiceMeal = new ArrayList<>();
-            PriceRiceMeal.add(70); // CHICKEN SHOTS
-            PriceRiceMeal.add(75); //1PC CHICKEN
-            PriceRiceMeal.add(115); //2PCS CHICKEN
-            PriceRiceMeal.add(145); // 3PCS CHICKEN
-
-            ArrayList<Integer> PriceSides = new ArrayList<>();
-            PriceSides.add(130); //CHICKEN SHOTS BUCKET
-            PriceSides.add(95); // TWISTER FRIES
-            PriceSides.add(15); // PLAIN RICE
-            PriceSides.add(25); // EXTRA SAUCE
+            // Menu items
+            ArrayList<String> Main = new ArrayList<>(Arrays.asList("Half Chicken", "Whole Chicken"));
+            ArrayList<String> RiceMeal = new ArrayList<>(Arrays.asList("Chicken Shots", "1 pc chicken", "2 pcs chicken", "3 pcs chicken"));
+            ArrayList<String> Sides = new ArrayList<>(Arrays.asList("Chicken shots bucket", "Twister fries", "Plain rice", "Extra sauce"));
+            ArrayList<String> Flavors = new ArrayList<>(Arrays.asList("Classic", "Honey Garlic", "K-Style", "Spicy K-Style", "Teriyaki", "Cheesy Bacon"));
+            ArrayList<Integer> PriceMain = new ArrayList<>(Arrays.asList(265, 495));
+            ArrayList<Integer> PriceRiceMeal = new ArrayList<>(Arrays.asList(70, 75, 115, 145));
+            ArrayList<Integer> PriceSides = new ArrayList<>(Arrays.asList(130, 95, 15, 25));
 
             System.out.println("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ WELCOME TO THE CRUNCH ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~");
             System.out.println("This is our menu");
@@ -367,7 +337,7 @@ public class TheCrunch {
                     System.out.println("Payment was successful. Your change is: PHP " + change);
                     System.out.println("Thank you for your order, " + CustomerName + "!");
 
-                    // Receipt display addition starts here
+                    // Receipt display
                     SimpleDateFormat dateFormat = new SimpleDateFormat("MM/dd/yyyy : hh:mma");
                     dateFormat.setTimeZone(TimeZone.getTimeZone("Asia/Manila"));
                     String dateTime = dateFormat.format(new Date());
@@ -383,12 +353,25 @@ public class TheCrunch {
                     System.out.printf("Cash Paid: PHP %.2f%n", payment);
                     System.out.printf("Change: PHP %.2f%n", change);
                     System.out.println("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~");
-                    // Receipt display addition ends here
 
                     // Log transaction
-                    // Fixed to use absolute path to avoid permission error
                     logTransaction(CustomerName, loggedInUsername, product, quantity, priceList, totalAmount);
-                    finalizingOrder = false; 
+
+                    // Save transaction history
+                    StringBuilder transactionDetails = new StringBuilder();
+                    transactionDetails.append(dateTime).append(" - ");
+                    transactionDetails.append("Customer: ").append(CustomerName).append(" - Items: ");
+                    for (int i = 0; i < product.size(); i++) {
+                        transactionDetails.append(quantity.get(i)).append("x ").append(product.get(i));
+                        if (i < product.size() - 1) transactionDetails.append(", ");
+                    }
+                    transactionDetails.append(" - Total: PHP ").append(String.format("%.2f", totalAmount));
+
+                    // Append to existing history if exists for user
+                    transactionHistory.putIfAbsent(loggedInUsername, new ArrayList<>());
+                    transactionHistory.get(loggedInUsername).add(transactionDetails.toString());
+
+                    finalizingOrder = false;
                 } else {
                     System.out.print("Would you like to void an item? (y/n): ");
                     char voidItem = scanner.next().charAt(0);
@@ -426,44 +409,76 @@ public class TheCrunch {
                 continueTransaction = false;
             }
         }
-        scanner.close(); 
+        scanner.close();
     }
 
     // Logging function - logs transaction details to transactions.txt with Philippine date & time
     private static void logTransaction(String customerName, String cashierUsername,
                                        ArrayList<String> products, ArrayList<Integer> quantities,
                                        ArrayList<Double> prices, double totalAmount) {
-        try {
-            // <-- Change relative path to absolute path here to avoid permission errors -->
-            FileWriter fw = new FileWriter("transactions.txt", true);
-            BufferedWriter bw = new BufferedWriter(fw);
+        File file = new File("transactions.txt");
 
+        // Create the file if it doesn't exist
+        try {
+            if (file.createNewFile()) {
+                System.out.println("File created successfully.");
+            } else {
+                System.out.println("File already exists.");
+            }
+        } catch (IOException e) {
+            System.out.println("Failed to create the file.");
+            e.printStackTrace();
+            return; 
+        }
+
+        // Log transaction details
+        try (BufferedWriter writer = new BufferedWriter(new FileWriter(file, true))) {
             SimpleDateFormat dateFormat = new SimpleDateFormat("MM/dd/yyyy : hh:mma");
             dateFormat.setTimeZone(TimeZone.getTimeZone("Asia/Manila"));
             String dateTime = dateFormat.format(new Date());
 
-            bw.write("Transaction Date and Time: " + dateTime);
-            bw.newLine();
-            bw.write("Cashier: " + cashierUsername);
-            bw.newLine();
-            bw.write("Customer Name: " + customerName);
-            bw.newLine();
-            bw.write("Items Purchased:");
-            bw.newLine();
+            writer.write("Transaction Date and Time: " + dateTime);
+            writer.newLine();
+            writer.write("Cashier: " + cashierUsername);
+            writer.newLine();
+            writer.write("Customer Name: " + customerName);
+            writer.newLine();
+            writer.write("Items Purchased:");
+            writer.newLine();
             for (int i = 0; i < products.size(); i++) {
-                bw.write(quantities.get(i) + " x " + products.get(i) + " - Price: " + prices.get(i));
-                bw.newLine();
+                writer.write(quantities.get(i) + " x " + products.get(i) + " - Price: PHP " + String.format("%.2f", prices.get(i)));
+                writer.newLine();
             }
-            bw.write("Total Amount: PHP " + totalAmount);
-            bw.newLine();
-            bw.write("--------------------------------------------------");
-            bw.newLine();
+            writer.write("Total Amount: PHP " + String.format("%.2f", totalAmount));
+            writer.newLine();
+            writer.write("--------------------------------------------------");
+            writer.newLine();
 
-            bw.close();
             System.out.println("Transaction logged successfully.");
         } catch (IOException e) {
             System.out.println("Oops! Failed to log the transaction.");
             e.printStackTrace();
+        }
+
+        // Option to read the file contents
+        try (Scanner scn = new Scanner(System.in)) {
+            System.out.print("Do you want to read the transaction file? (yes/no): ");
+            String response = scn.nextLine();
+
+            if (response.equalsIgnoreCase("yes")) {
+                // Read the file
+                try (BufferedReader reader = new BufferedReader(new FileReader(file))) {
+                    String line;
+                    while ((line = reader.readLine()) != null) {
+                        System.out.println(line);
+                    }
+                } catch (IOException e) {
+                    System.out.println("Failed to read from the file.");
+                    e.printStackTrace();
+                }
+            } else {
+                System.out.println("Skipping file read.");
+            }
         }
     }
 
